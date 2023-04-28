@@ -22,4 +22,8 @@ return function (App $app) {
     //update goldPrice by user
     $routes = require __DIR__ . '/byUser/deleteForUser.php';
     $routes($app);
+
+    //update goldPrice by user
+    $routes = require __DIR__ . '/byUser/postAllDataForUser.php';
+    $routes($app);
 };
