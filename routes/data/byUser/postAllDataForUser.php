@@ -9,12 +9,7 @@ return function (App $app) {
         $body = $request->getParsedBody();
         $time = $body['time'];
         $user = $body['name'];
-//        when use web server
-//        Determine the file key based on the type field
         $fileKey = $body['type'] === 'csv' ? 'csvFile' : 'file';
-
-//        when to use postman
-//        $data = $body['file'];
 
         $sql = "INSERT INTO rate (time, name, purchase_price, sell_off_price, user_name_update)
                 VALUES (:time, :name, :purchase_price, :sell_off_price, :user_name_update)";
