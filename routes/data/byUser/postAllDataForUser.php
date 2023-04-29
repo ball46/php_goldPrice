@@ -9,7 +9,14 @@ return function (App $app) {
         $body = $request->getParsedBody();
         $time = $body['time'];
         $user = $body['name'];
-        $fileKey = $body['type'] === 'csv' ? 'csvFile' : 'file';
+        $fileKey = $body['type'] === 'csv' ? 'csvFile' : ($body['type'] === 'text' ? 'textFile' : '');
+
+        if($fileKey === ''){
+            $response->getBody()->write(json_encode("File is not a CSV or text file"));
+            return $response
+                ->withHeader('content-type', 'application/json')
+                ->withStatus(400);
+        }
 
         $sql = "INSERT INTO rate (time, name, purchase_price, sell_off_price, user_name_update)
                 VALUES (:time, :name, :purchase_price, :sell_off_price, :user_name_update)";
@@ -20,7 +27,7 @@ return function (App $app) {
             $statement = $conn->prepare($sql);
             $result = "";
 
-            if ($fileKey === 'file') {
+            if ($fileKey === 'textFile') {
                 $file = $_FILES['file'];
                 $data = file_get_contents($file['tmp_name']);
                 $data_array = json_decode($data);
