@@ -55,6 +55,8 @@ return function (App $app) {
                         array_pop($dataArray);
                     }
 
+                    array_shift($dataArray);
+
                     foreach ($dataArray as $row) {
                         $name = $row[0];
                         $bid = $row[1];
