@@ -4,6 +4,7 @@
         "slim/psr7": "^1.6",
       "ext-pdo": "*",
       "ext-curl": "*",
-        "firebase/php-jwt": "^6.4"
+        "firebase/php-jwt": "^6.4",
+        "phpmailer/phpmailer": "^6.8"
     }
 }

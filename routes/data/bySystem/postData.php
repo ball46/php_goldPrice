@@ -2,10 +2,11 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 return function (App $app) {
     $app->post('/inputData', function (Request $request, Response $response){
-        global $app;
         $url = 'https://www.thaigold.info/RealTimeDataV2/gtdata_.txt';
         $data = file_get_contents($url);
         $json = json_decode($data);
@@ -15,9 +16,6 @@ return function (App $app) {
 
         $sql = "INSERT INTO rate (time, name, purchase_price, sell_off_price, user_name_update)
                 VALUES (:time, :name, :purchase_price, :sell_off_price, :user_name_update)";
-
-        $routes = require __DIR__ . '/../../users/bySystem/getAllUsers.php';
-        $routes($app);
 
         try{
             $db = new DB();
@@ -31,6 +29,49 @@ return function (App $app) {
                 $bid = $object->bid;
                 $ask = $object->ask;
                 $user = "data";
+
+                if($name == "สมาคมฯ"){
+                    $my_sql = "SELECT * FROM rate WHERE name = '$name' ORDER BY id DESC LIMIT 1";
+                    $stt = $conn->query($my_sql);
+                    $data_price = $stt->fetch(PDO::FETCH_OBJ);
+
+                    if(isset($data_price->purchase_price) && $data_price->purchase_price != $bid
+                        || isset($data_price->sell_off_price) && $data_price->sell_off_price != $ask){
+                        $my_sql2 = "SELECT * FROM users";
+                        $mail = new PHPMailer(true);
+                        $stt2 = $conn->query($my_sql2);
+                        $data_user = $stt2->fetchAll(PDO::FETCH_OBJ);
+
+                        try{
+                            //Server settings
+                            $mail->isSMTP();
+                            $mail->Host       = 'smtp.outlook.com';
+                            $mail->SMTPAuth   = true;
+                            $mail->Username   = 'charnchol_pa@cmu.ac.th';
+                            $mail->Password   = 'cmu31Ball46*';
+                            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                            $mail->Port       = 587;
+
+                            foreach ($data_user as $username){
+                                //Recipient
+                                $mail->setFrom('charnchol_pa@cmu.ac.th', 'Admin');
+                                $mail->addAddress($username->email, $username->name);
+
+                                //Content
+                                $mail->isHTML();
+                                $mail->Subject = 'Gold price is updated';
+                                $mail->Body    = '<p>Data is updated</p>';
+
+                                $mail->send();
+                            }
+
+                            echo 'Message has been sent';
+
+                        }catch(Exception){
+                            echo "Message could not be sent. Mailer Error: $mail->ErrorInfo";
+                        }
+                    }
+                }
 
                 $statement->bindParam(':time', $time);
                 $statement->bindParam(':name', $name);
