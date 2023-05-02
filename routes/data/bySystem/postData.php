@@ -45,16 +45,16 @@ return function (App $app) {
                         try{
                             //Server settings
                             $mail->isSMTP();
-                            $mail->Host       = 'smtp.outlook.com';
+                            $mail->Host       = 'smtp.???.com';
                             $mail->SMTPAuth   = true;
-                            $mail->Username   = 'charnchol_pa@cmu.ac.th';
-                            $mail->Password   = 'cmu31Ball46*';
+                            $mail->Username   = 'your mail is here';
+                            $mail->Password   = 'your password is here';
                             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                             $mail->Port       = 587;
 
                             foreach ($data_user as $username){
                                 //Recipient
-                                $mail->setFrom('charnchol_pa@cmu.ac.th', 'Admin');
+                                $mail->setFrom('your mail is here', 'Admin');
                                 $mail->addAddress($username->email, $username->name);
 
                                 //Content
